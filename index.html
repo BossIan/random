@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Time Calculator</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Time In - Time Out Calculator</h2>
+
+  <label>Time In:</label><br>
+  <input type="time" id="timeIn"><br>
+
+  <label>Time Out:</label><br>
+  <input type="time" id="timeOut"><br>
+
+  <button onclick="calculateTime()">Add Time</button>
+
+  <h3 id="result"></h3>
+
+  <h3>Total Time: <span id="total">0 hours 0 minutes</span></h3>
+
+  <h4>Entries:</h4>
+  <ul id="entries"></ul>
+
+  <script>
+    let totalMinutesAccumulated = 0;
+
+    function calculateTime() {
+      const timeIn = document.getElementById("timeIn").value;
+      const timeOut = document.getElementById("timeOut").value;
+
+      if (!timeIn || !timeOut) {
+        document.getElementById("result").innerText = "Please enter both times.";
+        return;
+      }
+
+      let [inHours, inMinutes] = timeIn.split(":").map(Number);
+      let [outHours, outMinutes] = timeOut.split(":").map(Number);
+
+      let start = new Date();
+      start.setHours(inHours, inMinutes, 0);
+
+      let end = new Date();
+      end.setHours(outHours, outMinutes, 0);
+
+      // Handle overnight
+      if (end < start) {
+        end.setDate(end.getDate() + 1);
+      }
+
+      let diffMs = end - start;
+      let minutesWorked = Math.floor(diffMs / (1000 * 60));
+
+      // Add to total
+      totalMinutesAccumulated += minutesWorked;
+
+      // Convert current entry
+      let hours = Math.floor(minutesWorked / 60);
+      let minutes = minutesWorked % 60;
+
+      // Convert total
+      let totalHours = Math.floor(totalMinutesAccumulated / 60);
+      let totalMinutes = totalMinutesAccumulated % 60;
+
+      // Display current result
+      document.getElementById("result").innerText =
+        `Last Entry: ${hours} hour(s) and ${minutes} minute(s)`;
+
+      // Display total
+      document.getElementById("total").innerText =
+        `${totalHours} hour(s) and ${totalMinutes} minute(s)`;
+
+      // Add to list
+      let li = document.createElement("li");
+      li.textContent = `${timeIn} - ${timeOut} = ${hours}h ${minutes}m`;
+      document.getElementById("entries").appendChild(li);
+    }
+  </script>
+
+</body>
+</html>
